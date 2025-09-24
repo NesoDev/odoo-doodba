@@ -11,7 +11,7 @@ else
     echo "Docker ya está instalado."
 fi
 
-echo "=== Verificando Docker Compose ==="
+echo "\n=== Verificando Docker Compose ==="
 if ! command -v docker compose &> /dev/null && ! command -v docker-compose &> /dev/null; then
     echo "Docker Compose no encontrado. Instalando..."
     sudo apt update
@@ -20,7 +20,7 @@ else
     echo "Docker Compose ya está instalado."
 fi
 
-echo "=== Verificando Python3 y pip ==="
+echo "\n=== Verificando Python3 y pip ==="
 if ! command -v python3 &> /dev/null; then
     echo "Python3 no encontrado. Instalando..."
     sudo apt update
@@ -37,14 +37,14 @@ else
 fi
 
 
-echo "=== Instalando dependencias de requirements.txt (si existe) ==="
+echo "\n=== Instalando dependencias de requirements.txt (si existe) ==="
 if [ -f "requirements.txt" ]; then
     pip3 install -r requirements.txt
 else
     echo "No se encontró requirements.txt, saltando este paso."
 fi
 
-echo "=== Verificando Copier ==="
+echo "\n=== Verificando Copier ==="
 if ! command -v copier &> /dev/null; then
     echo "Copier no encontrado. Instalando..."
     pip3 install copier
@@ -52,7 +52,7 @@ else
     echo "Copier ya está instalado."
 fi
 
-echo "=== Verificando carpeta 'app' ==="
+echo "\n=== Verificando carpeta 'app' ==="
 if [ -d "app" ]; then
     if [ -z "$(ls -A app)" ]; then
         echo "La carpeta 'app' existe y está vacía. Usaremos esta."
@@ -65,9 +65,22 @@ else
     mkdir -p app
 fi
 
-echo "=== Ejecutando Copier con Doodba Template ==="
+echo "\n=== Ejecutando Copier con Doodba Template ==="
 copier copy gh:Tecnativa/doodba-copier-template ./app --trust --data-file ./copier-data-example.yml
 
 cd app
+
+invoke git-aggregate
+
+invoke img-build --pull
+
+invoke start
+
+docker-compose run --rm odoo --stop-after-init -i base
+
+docker-compose run --rm odoo --without-demo=true --stop-after-init -i base
+
+invoke restart
+
 
 echo "=== Proceso completado ==="
