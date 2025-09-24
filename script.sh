@@ -67,6 +67,6 @@ else
 fi
 
 echo "=== Ejecutando Copier con Doodba Template ==="
-copier copy gh:Tecnativa/doodba-copier-template ./odoo --trust
+copier copy gh:Tecnativa/doodba-copier-template ./odoo --trust --data copier-data-example.yml
 
 echo "=== Proceso completado ==="
