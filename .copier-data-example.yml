@@ -1,13 +1,11 @@
-_commit: v8.4.2
-_src_path: gh:Tecnativa/doodba-copier-template
 backup_dst: ''
 cidr_whitelist: null
 domains_prod: {}
 domains_test: {}
 gitlab_url: ''
-odoo_admin_passwd: "YOUR_ODOO_PASSWORD"
+odoo_admin_passwd: "PASSWORD"
 odoo_dbfilter: ^prod
-odoo_initial_lang: en_ES
+odoo_initial_lang: es_ES
 odoo_listdb: false
 odoo_listdb_staging: false
 odoo_oci_image: ''
@@ -22,11 +20,10 @@ postgres_dbname: prod
 postgres_exposed: false
 postgres_username: odoo
 postgres_version: '16'
-postgres_password: "YOUR_POSTGRES_PASSWORD"
-project_author: AUTHOR_NAME
+postgres_password: "PASSWORD"
+project_author: AUTHOR
 project_license: MIT
 project_name: PROJECT_NAME
 smtp_default_from: ''
 smtp_relay_host: ''
 traefik_version: 2
-
