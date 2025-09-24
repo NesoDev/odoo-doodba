@@ -36,20 +36,6 @@ else
     echo "pip3 ya está instalado."
 fi
 
-echo "=== Verificando carpeta 'app' ==="
-if [ -d "app" ]; then
-    if [ -z "$(ls -A app)" ]; then
-        echo "La carpeta 'app' existe y está vacía. Usaremos esta."
-    else
-        echo "La carpeta 'app' existe y no está vacía. Crearemos una nueva carpeta."
-        mkdir -p app
-    fi
-else
-    echo "La carpeta 'app' no existe. Creándola..."
-    mkdir -p app
-fi
-
-cd app
 
 echo "=== Instalando dependencias de requirements.txt (si existe) ==="
 if [ -f "requirements.txt" ]; then
@@ -66,7 +52,22 @@ else
     echo "Copier ya está instalado."
 fi
 
+echo "=== Verificando carpeta 'app' ==="
+if [ -d "app" ]; then
+    if [ -z "$(ls -A app)" ]; then
+        echo "La carpeta 'app' existe y está vacía. Usaremos esta."
+    else
+        echo "La carpeta 'app' existe y no está vacía. Crearemos una nueva carpeta."
+        mkdir -p app
+    fi
+else
+    echo "La carpeta 'app' no existe. Creándola..."
+    mkdir -p app
+fi
+
 echo "=== Ejecutando Copier con Doodba Template ==="
-copier copy gh:Tecnativa/doodba-copier-template ./odoo --trust --data-file copier-data-example.yml
+copier copy gh:Tecnativa/doodba-copier-template ./app --trust --data-file ./copier-data-example.yml
+
+cd app
 
 echo "=== Proceso completado ==="
