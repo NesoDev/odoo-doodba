@@ -23,7 +23,7 @@ print_result() {
     local tool=$1
     local result=$2
     local color=$3
-    printf "\r${WHITE}[%s]...................[%s%s${WHITE}]\n" "$tool" "$color" "$result"
+    printf "\r${WHITE}[%s]...................[${color}%s${NC}${WHITE}]\n" "$tool" "$result"
 }
 
 spinner() {
@@ -77,5 +77,5 @@ check_and_install "Python3" "command -v python3" \
 check_and_install "Pip3" "command -v pip3" \
     "sudo apt update && sudo apt install -y python3-pip"
 
-check_and_install "Copier" "command -v copier" \
-    "pip3 install copier"
+check_tool "Python venv" "python3 -m venv --help" \
+    "sudo apt-get install -y python3-venv"
