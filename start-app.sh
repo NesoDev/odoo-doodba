@@ -44,7 +44,7 @@ spinner() {
 # Git Aggregate
 # ===========================
 print_step "Git Aggregate" "Running" "$YELLOW"
-invoke git-aggregate &>/dev/null &
+invoke git-aggregate
 pid=$!
 spinner "Git Aggregate" $pid
 wait $pid
