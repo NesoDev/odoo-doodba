@@ -2,9 +2,9 @@
 #
 # start-app.sh
 # ===========================
-# Script para inicializar y ejecutar un proyecto Odoo/Doodba.
-# Descarga repositorios, reconstruye imágenes Docker, crea base de datos
-# y reinicia los servicios.
+# Script para iniciar proyecto Odoo/Doodba.
+# Activa venv, entra a app, descarga repositorios,
+# reconstruye Docker, inicializa DB sin demo y reinicia servicios.
 
 GREEN="\e[92m"
 RED="\e[91m"
@@ -41,10 +41,38 @@ spinner() {
 }
 
 # ===========================
-# Git Aggregate
+# Activate virtualenv
+# ===========================
+if [ -d "venv" ]; then
+    print_step "Virtualenv" "Activating" "$YELLOW"
+    . venv/bin/activate >/dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        print_result "Virtualenv" "Activated" "$GREEN"
+    else
+        print_result "Virtualenv" "Error" "$RED"
+        exit 1
+    fi
+else
+    print_result "Virtualenv" "Missing" "$RED"
+    exit 1
+fi
+
+# ===========================
+# Enter app directory
+# ===========================
+if [ -d "app" ]; then
+    cd app || exit 1
+    print_result "App folder" "Entered" "$GREEN"
+else
+    print_result "App folder" "Missing" "$RED"
+    exit 1
+fi
+
+# ===========================
+# Git aggregate
 # ===========================
 print_step "Git Aggregate" "Running" "$YELLOW"
-invoke git-aggregate
+invoke git-aggregate &>/dev/null &
 pid=$!
 spinner "Git Aggregate" $pid
 wait $pid
@@ -56,30 +84,30 @@ else
 fi
 
 # ===========================
-# Docker Build
+# Rebuild Docker image
 # ===========================
-print_step "Docker Build" "Running" "$YELLOW"
+print_step "Img Build" "Running" "$YELLOW"
 invoke img-build --pull &>/dev/null &
 pid=$!
-spinner "Docker Build" $pid
+spinner "Img Build" $pid
 wait $pid
 if [ $? -eq 0 ]; then
-    print_result "Docker Build" "Finished" "$GREEN"
+    print_result "Img Build" "Finished" "$GREEN"
 else
-    print_result "Docker Build" "Error" "$RED"
+    print_result "Img Build" "Error" "$RED"
     exit 1
 fi
 
 # ===========================
-# Base de datos sin demo
+# Initialize database without demo
 # ===========================
 print_step "DB Init" "Running" "$YELLOW"
-docker compose run --rm odoo --without-demo=true --stop-after-init -i base &>/dev/null &
+docker-compose run --rm odoo --without-demo=true --stop-after-init -i base &>/dev/null &
 pid=$!
 spinner "DB Init" $pid
 wait $pid
 if [ $? -eq 0 ]; then
-    print_result "DB Init" "Created" "$GREEN"
+    print_result "DB Init" "Finished" "$GREEN"
 else
     print_result "DB Init" "Error" "$RED"
     exit 1
@@ -88,14 +116,16 @@ fi
 # ===========================
 # Restart services
 # ===========================
-print_step "Restart Services" "Running" "$YELLOW"
+print_step "Restart" "Running" "$YELLOW"
 invoke restart &>/dev/null &
 pid=$!
-spinner "Restart Services" $pid
+spinner "Restart" $pid
 wait $pid
 if [ $? -eq 0 ]; then
-    print_result "Restart Services" "Finished" "$GREEN"
+    print_result "Restart" "Finished" "$GREEN"
 else
-    print_result "Restart Services" "Error" "$RED"
+    print_result "Restart" "Error" "$RED"
     exit 1
 fi
+
+echo -e "${GREEN}All steps completed successfully!${NC}"
