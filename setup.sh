@@ -14,26 +14,27 @@ show_active() {
     echo -ne "\r${YELLOW}[${tool}]...................${status}${NC}"
 }
 
-# Finalizar paso (blanco + resultado en verde/rojo)
+# Finalizar paso (blanco + resultado verde/rojo)
 finalize_step() {
     local tool=$1
     local status=$2
-    local color_result
+    local result
 
     if [[ "$status" == "Installed" ]]; then
-        color_result="${GREEN}${status}${NC}"
+        result="${GREEN}${status}${NC}"
     elif [[ "$status" == Error* ]]; then
-        color_result="${RED}${status}${NC}"
+        result="${RED}${status}${NC}"
     else
-        color_result="${WHITE}${status}${NC}"
+        result="${WHITE}${status}${NC}"
     fi
 
-    echo -ne "\r${WHITE}[${tool}]...................${color_result}${NC}\n"
+    # Borra todo y muestra limpio
+    echo -ne "\r\033[K${WHITE}[${tool}]...................${result}\n"
 }
 
 ### --- Docker --- ###
 show_active "Docker" "Checking"
-sleep 0.5
+sleep 0.8
 if command -v docker &> /dev/null; then
     finalize_step "Docker" "Installed"
 else
@@ -51,13 +52,13 @@ fi
 
 ### --- Docker Compose --- ###
 show_active "Docker Compose" "Checking"
-sleep 0.5
+sleep 0.8
 if command -v docker-compose &> /dev/null; then
     finalize_step "Docker Compose" "Installed"
 else
     show_active "Docker Compose" "Installing"
     sleep 1
-    if sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" \
+    if sudo curl -sL "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" \
         -o /usr/local/bin/docker-compose \
         && sudo chmod +x /usr/local/bin/docker-compose; then
         finalize_step "Docker Compose" "Installed"
