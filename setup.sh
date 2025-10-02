@@ -3,7 +3,7 @@
 # setup.sh
 # =========
 # Script para preparar el entorno de Odoo/Doodba en un VPS.
-# Verifica e instala dependencias necesarias: Docker, Docker Compose, Python3, Pip3, Copier.
+# Verifica e instala dependencias necesarias: Docker, Docker Compose, Python3, Pip3, Python venv.
 # Cada paso muestra su estado en una sola línea dinámica.
 
 GREEN="\e[92m"
