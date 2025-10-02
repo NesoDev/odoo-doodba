@@ -36,6 +36,7 @@ spinner() {
         print_step "$tool" "Installing $frame" "$YELLOW"
         sleep $delay
     done
+    printf "\r\033[K"
 }
 
 check_and_install() {
