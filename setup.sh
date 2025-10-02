@@ -82,7 +82,7 @@ check_and_install "Python venv" "python3 -m venv --help" \
 
 print_step "Docker group" "Configuring" "$YELLOW"
 sudo usermod -aG docker $USER
+exec newgrp docker
 sleep 0.6
 printf "\r\033[K"
 print_result "Docker group" "Configured" "$GREEN"
-echo "\n"
