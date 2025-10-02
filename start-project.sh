@@ -64,7 +64,8 @@ fi
 # ===========================
 if [ -f "requirements.txt" ]; then
     print_step "Requirements" "Installing" "$YELLOW"
-    ./venv/bin/pip install -r requirements.txt &>/dev/null &
+    . venv/bin/activate >/dev/null 2>&1
+    pip install -r requirements.txt &>/dev/null &
     pid=$!
     spinner "Requirements" $pid
     wait $pid
@@ -101,7 +102,7 @@ fi
 # ===========================
 # YAML
 # ===========================
-YAML_FILE="$(pwd)/copier-data-example.yml"
+YAML_FILE="$(pwd)/copier-answers.yml"
 print_step "YAML file" "Checking" "$YELLOW"
 sleep 0.6
 if [ -f "$YAML_FILE" ]; then
