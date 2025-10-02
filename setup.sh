@@ -79,3 +79,10 @@ check_and_install "Pip3" "command -v pip3" \
 
 check_and_install "Python venv" "python3 -m venv --help" \
     "sudo apt update && sudo apt install -y python3.10-venv"
+
+print_step "Docker group" "Configuring" "$YELLOW"
+sudo usermod -aG docker $USER
+print_result "Docker group" "Configured" "$GREEN"
+
+echo "Applying Docker group changes in current session..."
+exec newgrp docker
