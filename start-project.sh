@@ -15,14 +15,15 @@ print_step() {
     local tool=$1
     local status=$2
     local color=$3
-    printf "\r${color}[%s]...................%s${NC}" "$tool" "$status"
+    printf "\r${color}[%s]....................%s${NC}" "$tool" "$status"
 }
 
 print_result() {
     local tool=$1
     local result=$2
     local color=$3
-    printf "\r${WHITE}[%s]...................[${color}%s${NC}${WHITE}]\n" "$tool" "$result"
+    printf "\r\033[K"
+    printf "\r${WHITE}[%s]....................[${color}%s${NC}${WHITE}]\n" "$tool" "$result"
 }
 
 spinner() {
@@ -47,7 +48,7 @@ sleep 0.6
 if [ -d "venv" ]; then
     print_result "Virtualenv" "Exists" "$GREEN"
 else
-    python3 -m venv venv &>/dev/null &
+    python3 -m venv venv
     pid=$!
     spinner "Virtualenv" $pid
     wait $pid
@@ -65,7 +66,7 @@ fi
 if [ -f "requirements.txt" ]; then
     print_step "Requirements" "Installing" "$YELLOW"
     . venv/bin/activate >/dev/null 2>&1
-    pip install -r requirements.txt &>/dev/null &
+    pip3 install -r requirements.txt &>/dev/null &
     pid=$!
     spinner "Requirements" $pid
     wait $pid
@@ -116,8 +117,7 @@ fi
 # Copier
 # ===========================
 print_step "Copier" "Running" "$YELLOW"
-copier copy gh:Tecnativa/doodba-copier-template ./app \
-    --trust --data-file "$YAML_FILE" --vcs-ref=HEAD --defaults --force &>/dev/null &
+copier copy gh:Tecnativa/doodba-copier-template ./app --trust --data-file "$YAML_FILE" --vcs-ref=HEAD --defaults --force &>/dev/null &
 pid=$!
 spinner "Copier" $pid
 wait $pid

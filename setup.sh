@@ -78,4 +78,4 @@ check_and_install "Pip3" "command -v pip3" \
     "sudo apt update && sudo apt install -y python3-pip"
 
 check_and_install "Python venv" "python3 -m venv --help" \
-    "sudo apt-get install -y python3-venv"
+    "sudo apt update && sudo apt install -y python3.10-venv"
