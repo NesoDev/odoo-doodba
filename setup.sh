@@ -28,7 +28,6 @@ finalize_step() {
         result="${WHITE}${status}${NC}"
     fi
 
-    # Borra todo y muestra limpio
     echo -ne "\r\033[K${WHITE}[${tool}]...................${result}\n"
 }
 
@@ -64,6 +63,106 @@ else
         finalize_step "Docker Compose" "Installed"
     else
         finalize_step "Docker Compose" "Error Install"
+        exit 1
+    fi
+fi
+
+### --- Python3 --- ###
+show_active "Python3" "Checking"
+sleep 0.8
+if command -v python3 &> /dev/null; then
+    finalize_step "Python3" "Installed"
+else
+    show_active "Python3" "Installing"
+    sleep 1
+    if sudo apt update -y &> /dev/null \
+        && sudo apt install -y python3 &> /dev/null; then
+        finalize_step "Python3" "Installed"
+    else
+        finalize_step "Python3" "Error Install"
+        exit 1
+    fi
+fi
+
+### --- pip3 --- ###
+show_active "pip3" "Checking"
+sleep 0.8
+if command -v pip3 &> /dev/null; then
+    finalize_step "pip3" "Installed"
+else
+    show_active "pip3" "Installing"
+    sleep 1
+    if sudo apt update -y &> /dev/null \
+        && sudo apt install -y python3-pip &> /dev/null; then
+        finalize_step "pip3" "Installed"
+    else
+        finalize_step "pip3" "Error Install"
+        exit 1
+    fi
+fi
+
+### --- venv --- ###
+show_active "python3.10-venv" "Checking"
+sleep 0.8
+if dpkg -s python3.10-venv &> /dev/null; then
+    finalize_step "python3.10-venv" "Installed"
+else
+    show_active "python3.10-venv" "Installing"
+    sleep 1
+    if sudo apt install -y python3.10-venv &> /dev/null; then
+        finalize_step "python3.10-venv" "Installed"
+    else
+        finalize_step "python3.10-venv" "Error Install"
+        exit 1
+    fi
+fi
+
+### --- Virtualenv --- ###
+show_active "Virtualenv" "Checking"
+sleep 0.8
+if [ -d "venv" ]; then
+    finalize_step "Virtualenv" "Installed"
+else
+    show_active "Virtualenv" "Creating"
+    sleep 1
+    if python3 -m venv venv &> /dev/null; then
+        finalize_step "Virtualenv" "Installed"
+    else
+        finalize_step "Virtualenv" "Error Create"
+        exit 1
+    fi
+fi
+# Activar el entorno
+source venv/bin/activate
+
+### --- requirements.txt --- ###
+show_active "Requirements" "Checking"
+sleep 0.8
+if [ -f "requirements.txt" ]; then
+    show_active "Requirements" "Installing"
+    sleep 1
+    if pip3 install -r requirements.txt &> /dev/null; then
+        finalize_step "Requirements" "Installed"
+    else
+        finalize_step "Requirements" "Error Install"
+        exit 1
+    fi
+else
+    finalize_step "Requirements" "No file"
+fi
+
+### --- Copier --- ###
+show_active "Copier" "Checking"
+sleep 0.8
+if command -v copier &> /dev/null; then
+    finalize_step "Copier" "Installed"
+else
+    show_active "Copier" "Installing"
+    sleep 1
+    if pip3 install copier &> /dev/null; then
+        finalize_step "Copier" "Installed"
+    else
+        finalize_step "Copier" "Error Install"
         exit 1
     fi
 fi
