@@ -7,56 +7,59 @@ YELLOW="\033[1;33m"
 WHITE="\033[0;37m"
 NC="\033[0m"
 
-# Función para imprimir estado
-print_step() {
+# Imprime el paso actual (amarillo)
+show_active() {
     local tool=$1
     local status=$2
-    local mode=$3
+    echo -ne "\r${YELLOW}[${tool}]...................${status}${NC}"
+}
 
-    if [ "$mode" = "active" ]; then
-        # Paso actual en amarillo entero
-        echo -e "${YELLOW}[${tool}]...................${status}${NC}"
+# Reemplaza el paso (blanco + resultado verde/rojo)
+finalize_step() {
+    local tool=$1
+    local status=$2
+    local color_result
+
+    if [[ "$status" == "Installed" ]]; then
+        color_result="${GREEN}${status}${NC}"
+    elif [[ "$status" == Error* ]]; then
+        color_result="${RED}${status}${NC}"
     else
-        # Paso terminado: nombre blanco + resultado verde/rojo
-        local color=$WHITE
-        local result=$status
-        if [[ "$status" == "Installed" ]]; then
-            result="${GREEN}${status}${NC}"
-        elif [[ "$status" == Error* ]]; then
-            result="${RED}${status}${NC}"
-        fi
-        echo -e "${color}[${tool}]...................${result}${NC}"
+        color_result="${WHITE}${status}${NC}"
     fi
+
+    # Borrar la línea actual y reemplazar con versión final
+    echo -ne "\r${WHITE}[${tool}]...................${color_result}${NC}\n"
 }
 
 ### --- Docker --- ###
-print_step "Docker" "Checking" "active"
+show_active "Docker" "Checking"
 if command -v docker &> /dev/null; then
-    print_step "Docker" "Installed" "done"
+    finalize_step "Docker" "Installed"
 else
-    print_step "Docker" "Installing" "active"
+    show_active "Docker" "Installing"
     if curl -fsSL https://get.docker.com -o get-docker.sh \
         && sh get-docker.sh &> /dev/null \
         && rm get-docker.sh; then
-        print_step "Docker" "Installed" "done"
+        finalize_step "Docker" "Installed"
     else
-        print_step "Docker" "Error Install" "done"
+        finalize_step "Docker" "Error Install"
         exit 1
     fi
 fi
 
 ### --- Docker Compose --- ###
-print_step "Docker Compose" "Checking" "active"
+show_active "Docker Compose" "Checking"
 if command -v docker-compose &> /dev/null; then
-    print_step "Docker Compose" "Installed" "done"
+    finalize_step "Docker Compose" "Installed"
 else
-    print_step "Docker Compose" "Installing" "active"
+    show_active "Docker Compose" "Installing"
     if curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" \
         -o /usr/local/bin/docker-compose \
         && chmod +x /usr/local/bin/docker-compose; then
-        print_step "Docker Compose" "Installed" "done"
+        finalize_step "Docker Compose" "Installed"
     else
-        print_step "Docker Compose" "Error Install" "done"
+        finalize_step "Docker Compose" "Error Install"
         exit 1
     fi
 fi
